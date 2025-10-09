@@ -1,0 +1,125 @@
+Question 19: Create the form which consists firstName, lastName, phoneNumber, email, and all scenarios mentioned below:-
+● firstName and lastName should be a minimum character of 5 and a maximum of 15.
+● Add proper validation for email.
+● phoneNumber should be 10 digits and valid.
+How will you achieve this problem statement?
+Hint 1:- Only use FormBuilderTextField.
+
+source code:
+import 'package:flutter/material.dart';
+import 'package:flutter_form_builder/flutter_form_builder.dart';
+
+void main() {
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'FormBuilder Example',
+      home: const FormScreen(),
+    );
+  }
+}
+
+class FormScreen extends StatefulWidget {
+  const FormScreen({super.key});
+
+  @override
+  State<FormScreen> createState() => _FormScreenState();
+}
+
+class _FormScreenState extends State<FormScreen> {
+  final _formKey = GlobalKey<FormBuilderState>();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('User Details Form')),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: FormBuilder(
+          key: _formKey,
+          child: Column(
+            children: [
+              // First Name
+              FormBuilderTextField(
+                name: 'firstName',
+                decoration: const InputDecoration(labelText: 'First Name'),
+                validator: FormBuilderValidators.compose([
+                  FormBuilderValidators.required(errorText: 'Required'),
+                  FormBuilderValidators.minLength(5,
+                      errorText: 'Minimum 5 characters required'),
+                  FormBuilderValidators.maxLength(15,
+                      errorText: 'Maximum 15 characters allowed'),
+                ]),
+              ),
+              const SizedBox(height: 16),
+
+              // Last Name
+              FormBuilderTextField(
+                name: 'lastName',
+                decoration: const InputDecoration(labelText: 'Last Name'),
+                validator: FormBuilderValidators.compose([
+                  FormBuilderValidators.required(errorText: 'Required'),
+                  FormBuilderValidators.minLength(5,
+                      errorText: 'Minimum 5 characters required'),
+                  FormBuilderValidators.maxLength(15,
+                      errorText: 'Maximum 15 characters allowed'),
+                ]),
+              ),
+              const SizedBox(height: 16),
+
+              // Email
+              FormBuilderTextField(
+                name: 'email',
+                decoration: const InputDecoration(labelText: 'Email'),
+                validator: FormBuilderValidators.compose([
+                  FormBuilderValidators.required(errorText: 'Required'),
+                  FormBuilderValidators.email(errorText: 'Invalid email'),
+                ]),
+              ),
+              const SizedBox(height: 16),
+
+              // Phone Number
+              FormBuilderTextField(
+                name: 'phoneNumber',
+                decoration: const InputDecoration(labelText: 'Phone Number'),
+                keyboardType: TextInputType.phone,
+                validator: FormBuilderValidators.compose([
+                  FormBuilderValidators.required(errorText: 'Required'),
+                  FormBuilderValidators.numeric(errorText: 'Must be numeric'),
+                  FormBuilderValidators.minLength(10,
+                      errorText: 'Must be 10 digits'),
+                  FormBuilderValidators.maxLength(10,
+                      errorText: 'Must be 10 digits'),
+                ]),
+              ),
+              const SizedBox(height: 32),
+
+              ElevatedButton(
+                onPressed: () {
+                  if (_formKey.currentState?.saveAndValidate() ?? false) {
+                    final formData = _formKey.currentState?.value;
+                    // Process the valid data here
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Form is valid!')),
+                    );
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Validation failed!')),
+                    );
+                  }
+                },
+                child: const Text('Submit'),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
