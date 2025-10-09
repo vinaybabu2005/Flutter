@@ -1,0 +1,72 @@
+Question 18: Create a clock. What will be your approach to solving this problem statement?
+Hint 1:- Use flutter inbuilt library
+Hint 2:- Use only a timer.
+Hint 3:- Clock runs only for 1 sec.
+
+source code:
+import 'dart:async';
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'One-Second Clock',
+      home: const ClockPage(),
+    );
+  }
+}
+
+class ClockPage extends StatefulWidget {
+  const ClockPage({super.key});
+
+  @override
+  State<ClockPage> createState() => _ClockPageState();
+}
+
+class _ClockPageState extends State<ClockPage> {
+  late Timer _timer;
+  DateTime _currentTime = DateTime.now();
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Timer runs only once after 1 second
+    _timer = Timer(const Duration(seconds: 1), () {
+      setState(() {
+        _currentTime = DateTime.now();
+      });
+      // Timer automatically stops after this callback
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
+  }
+
+  String _formatTime(DateTime time) {
+    return "${time.hour.toString().padLeft(2,'0')}:${time.minute.toString().padLeft(2,'0')}:${time.second.toString().padLeft(2,'0')}";
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text("Clock (1 second run)")),
+      body: Center(
+        child: Text(
+          _formatTime(_currentTime),
+          style: const TextStyle(fontSize: 48, fontWeight: FontWeight.bold),
+        ),
+      ),
+    );
+  }
+}
