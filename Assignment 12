@@ -1,0 +1,79 @@
+Question 17: Show the start and end date in the date picker. But the end date should be 29 days ago from the start date. What will be your approach to getting this problem statement?
+Hint 1:- Use the date picker library for selecting the start and end date.
+Hint 2:- Add the logic which is end data should be 29 days ago from the start date.
+
+source code:
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Date Picker Demo',
+      home: const DatePickerScreen(),
+    );
+  }
+}
+
+class DatePickerScreen extends StatefulWidget {
+  const DatePickerScreen({super.key});
+
+  @override
+  State<DatePickerScreen> createState() => _DatePickerScreenState();
+}
+
+class _DatePickerScreenState extends State<DatePickerScreen> {
+  DateTime? startDate;
+  DateTime? endDate;
+
+  Future<void> _pickStartDate() async {
+    DateTime now = DateTime.now();
+
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: startDate ?? now,
+      firstDate: DateTime(2000),
+      lastDate: now,
+    );
+
+    if (picked != null) {
+      setState(() {
+        startDate = picked;
+        endDate = startDate!.subtract(const Duration(days: 29)); // End date 29 days before start date
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    String startText =
+        startDate != null ? "${startDate!.toLocal()}".split(' ')[0] : "Not selected";
+    String endText =
+        endDate != null ? "${endDate!.toLocal()}".split(' ')[0] : "N/A";
+
+    return Scaffold(
+      appBar: AppBar(title: const Text("Start and End Date Picker")),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text('Start Date: $startText', style: const TextStyle(fontSize: 18)),
+            const SizedBox(height: 16),
+            Text('End Date (29 days before): $endText', style: const TextStyle(fontSize: 18)),
+            const SizedBox(height: 40),
+            ElevatedButton(
+              onPressed: _pickStartDate,
+              child: const Text('Select Start Date'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
