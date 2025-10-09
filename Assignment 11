@@ -1,0 +1,141 @@
+Question 16: How to Show this result based on the given details:
+
+True-answers=6
+Wrong -answers=0
+Total-questions=6
+Hint 1:- Use imageview and textview, containers for showing the image and text.
+Hint 2:- Add the logic for showing the result based on true, and false values out of total questions.
+
+SOURCE CODE:
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Quiz Result',
+      home: ResultPage(
+        trueAnswers: 6,
+        wrongAnswers: 0,
+        totalQuestions: 6,
+      ),
+      debugShowCheckedModeBanner: false,
+    );
+  }
+}
+
+class ResultPage extends StatelessWidget {
+  final int trueAnswers;
+  final int wrongAnswers;
+  final int totalQuestions;
+
+  const ResultPage({
+    super.key,
+    required this.trueAnswers,
+    required this.wrongAnswers,
+    required this.totalQuestions,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    double percentage = (trueAnswers / totalQuestions) * 100;
+    bool isPassed = percentage >= 50; // pass threshold, adjust as needed
+
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 40),
+          child: Column(
+            children: [
+              // Top row with legend and percentage circle
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  // Legend column
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _colorLegend(Colors.blue, 'Total Question', totalQuestions),
+                      const SizedBox(height: 12),
+                      _colorLegend(Colors.green, 'True Question', trueAnswers),
+                      const SizedBox(height: 12),
+                      _colorLegend(Colors.red, 'Wrong answer', wrongAnswers),
+                    ],
+                  ),
+
+                  // Percentage circle with status text
+                  Column(
+                    children: [
+                      CircleAvatar(
+                        radius: 45,
+                        backgroundColor: isPassed ? Colors.green : Colors.red,
+                        child: Text(
+                          '${percentage.toStringAsFixed(2)}%',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        isPassed ? 'Passed' : 'Failed',
+                        style: TextStyle(
+                          color: isPassed ? Colors.green : Colors.red,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+
+              const SizedBox(height: 70),
+
+              // Congratulatory text
+              Text(
+                isPassed
+                    ? 'Congratulations! You are passed.'
+                    : 'Sorry, you did not pass.',
+                style: const TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+
+              const SizedBox(height: 40),
+
+              // Trophy image
+              Image.network(
+                'https://cdn-icons-png.flaticon.com/512/616/616408.png', // Sample trophy image URL
+                height: 150,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _colorLegend(Color color, String label, int count) {
+    return Row(
+      children: [
+        Container(width: 20, height: 20, color: color),
+        const SizedBox(width: 12),
+        Text(
+          '$label $count',
+          style: const TextStyle(fontSize: 18),
+        ),
+      ],
+    );
+  }
+}
