@@ -1,0 +1,93 @@
+Question 24: You have two buttons A & B . When you click on the A button the image will be shown and you click on the B button then your name, phone number, and email will be shown. How will you achieve this problem statement?
+Hint 1:- Add the flag to show the different-2 data on click of buttons.
+Hint 2:- Add text in the column for showing the name, phone number, and email.
+Hint 3:- Add imageView to show the image.
+Hint 4:- Add the image to the assets folder
+
+souce code:
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Button Toggle Demo',
+      home: HomeScreen(),
+      debugShowCheckedModeBanner: false,
+    );
+  }
+}
+
+class HomeScreen extends StatefulWidget {
+  @override
+  _HomeScreenState createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  bool showImage = false;
+  bool showDetails = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Button A & B Demo'),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            // Row with Buttons A and B
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      showImage = true;
+                      showDetails = false;
+                    });
+                  },
+                  child: Text('Button A'),
+                ),
+                SizedBox(width: 20),
+                ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      showImage = false;
+                      showDetails = true;
+                    });
+                  },
+                  child: Text('Button B'),
+                ),
+              ],
+            ),
+
+            SizedBox(height: 40),
+
+            // Conditional display
+            if (showImage)
+              Image.asset(
+                'assets/profile.png',
+                width: 200,
+                height: 200,
+              ),
+
+            if (showDetails)
+              Column(
+                children: [
+                  Text('Name: John Doe', style: TextStyle(fontSize: 18)),
+                  Text('Phone: +1 123 456 7890', style: TextStyle(fontSize: 18)),
+                  Text('Email: john.doe@example.com', style: TextStyle(fontSize: 18)),
+                ],
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+}
