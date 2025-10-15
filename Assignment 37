@@ -1,0 +1,90 @@
+Question 3: Your client has engaged you to create a slide animation featuring an image as part of their project
+
+source code:
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(SlideAnimationApp());
+}
+
+class SlideAnimationApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Slide Animation Example',
+      theme: ThemeData(primarySwatch: Colors.blue),
+      home: SlideAnimationScreen(),
+    );
+  }
+}
+
+class SlideAnimationScreen extends StatefulWidget {
+  @override
+  _SlideAnimationScreenState createState() => _SlideAnimationScreenState();
+}
+
+class _SlideAnimationScreenState extends State<SlideAnimationScreen>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<Offset> _slideAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+
+    // 🔹 Initialize AnimationController
+    _controller = AnimationController(
+      duration: Duration(seconds: 2),
+      vsync: this,
+    );
+
+    // 🔹 Define slide animation
+    _slideAnimation = Tween<Offset>(
+      begin: Offset(-1.5, 0), // Start off-screen left
+      end: Offset(0, 0),      // End at original position
+    ).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
+    );
+
+    // 🔹 Start animation automatically
+    _controller.forward();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text("Slide Animation Example")),
+      body: Center(
+        // 🔹 SlideTransition applies the animation to child
+        child: SlideTransition(
+          position: _slideAnimation,
+          child: Container(
+            width: 250,
+            height: 250,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+              image: DecorationImage(
+                image: NetworkImage(
+                    'https://images.pexels.com/photos/213780/pexels-photo-213780.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500'),
+                fit: BoxFit.cover,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black26,
+                  blurRadius: 8,
+                  offset: Offset(4, 4),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
