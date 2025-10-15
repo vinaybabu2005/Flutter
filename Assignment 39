@@ -1,0 +1,134 @@
+Question 5: Create a Flutter program to fetch all image links and accompanying text from a Firestore collection and present them in cards with a left-to-right slide transition effect. Ensure the cards are scrollable.
+
+source code:
+import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+void main() {
+  runApp(FirestoreImageSlideApp());
+}
+
+class FirestoreImageSlideApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Firestore Image Slide Cards',
+      theme: ThemeData(primarySwatch: Colors.blue),
+      home: ImageCardsScreen(),
+    );
+  }
+}
+
+class ImageCardsScreen extends StatefulWidget {
+  @override
+  _ImageCardsScreenState createState() => _ImageCardsScreenState();
+}
+
+class _ImageCardsScreenState extends State<ImageCardsScreen>
+    with SingleTickerProviderStateMixin {
+  final CollectionReference collection =
+      FirebaseFirestore.instance.collection('images'); // Firestore collection
+
+  late AnimationController _controller;
+  late Animation<Offset> _slideAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _controller = AnimationController(
+      duration: Duration(milliseconds: 500),
+      vsync: this,
+    );
+
+    _slideAnimation = Tween<Offset>(
+      begin: Offset(1, 0), // Start off-screen right
+      end: Offset(0, 0),   // End at original position
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
+
+    // Start animation when screen loads
+    _controller.forward();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text("Firestore Image Cards")),
+      body: StreamBuilder<QuerySnapshot>(
+        stream: collection.snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            return Center(child: Text("Error: ${snapshot.error}"));
+          }
+
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          }
+
+          final docs = snapshot.data!.docs;
+
+          if (docs.isEmpty) {
+            return Center(child: Text("No images found"));
+          }
+
+          return ListView.builder(
+            scrollDirection: Axis.horizontal, // left-to-right scroll
+            itemCount: docs.length,
+            itemBuilder: (context, index) {
+              final data = docs[index].data() as Map<String, dynamic>;
+              final imageUrl = data['imageUrl'] ?? '';
+              final description = data['text'] ?? '';
+
+              return SlideTransition(
+                position: _slideAnimation,
+                child: Container(
+                  width: 250,
+                  margin: EdgeInsets.all(10),
+                  child: Card(
+                    elevation: 5,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Expanded(
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.vertical(
+                                top: Radius.circular(12)),
+                            child: imageUrl.isNotEmpty
+                                ? Image.network(
+                                    imageUrl,
+                                    fit: BoxFit.cover,
+                                  )
+                                : Container(
+                                    color: Colors.grey[300],
+                                    child: Icon(Icons.image, size: 50),
+                                  ),
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: Text(
+                            description,
+                            style: TextStyle(fontSize: 16),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            },
+          );
+        },
+      ),
+    );
+  }
+}
