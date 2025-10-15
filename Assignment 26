@@ -1,0 +1,160 @@
+Question 2: Create an alertDialog form with name, last name, email, and phone number and store all data in shared preferences and show it in UI after submitting the data. What will be your approach to solving this problem statement?
+Hint 1:- Use the alert dialog box and textformfield.
+Hint 2:- Use the shared preferences library to store the data of all fields
+
+source code:
+import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+void main() {
+  runApp(MyFormApp());
+}
+
+class MyFormApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'AlertDialog Form',
+      theme: ThemeData(primarySwatch: Colors.blue),
+      home: FormHomePage(),
+    );
+  }
+}
+
+class FormHomePage extends StatefulWidget {
+  @override
+  _FormHomePageState createState() => _FormHomePageState();
+}
+
+class _FormHomePageState extends State<FormHomePage> {
+  // Variables to hold data
+  String? name, lastName, email, phone;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadData(); // Load stored data on app start
+  }
+
+  // Load data from SharedPreferences
+  Future<void> _loadData() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      name = prefs.getString('name') ?? '';
+      lastName = prefs.getString('lastName') ?? '';
+      email = prefs.getString('email') ?? '';
+      phone = prefs.getString('phone') ?? '';
+    });
+  }
+
+  // Save data to SharedPreferences
+  Future<void> _saveData(String n, String l, String e, String p) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('name', n);
+    await prefs.setString('lastName', l);
+    await prefs.setString('email', e);
+    await prefs.setString('phone', p);
+    _loadData(); // Refresh UI after saving
+  }
+
+  // Hint 1: AlertDialog + TextFormField
+  void _showFormDialog() {
+    final _formKey = GlobalKey<FormState>();
+    TextEditingController nameController = TextEditingController();
+    TextEditingController lastNameController = TextEditingController();
+    TextEditingController emailController = TextEditingController();
+    TextEditingController phoneController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text("Enter Your Details"),
+          content: Form(
+            key: _formKey,
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextFormField(
+                    controller: nameController,
+                    decoration: InputDecoration(labelText: 'First Name'),
+                    validator: (value) =>
+                        value!.isEmpty ? 'Enter first name' : null,
+                  ),
+                  TextFormField(
+                    controller: lastNameController,
+                    decoration: InputDecoration(labelText: 'Last Name'),
+                    validator: (value) =>
+                        value!.isEmpty ? 'Enter last name' : null,
+                  ),
+                  TextFormField(
+                    controller: emailController,
+                    decoration: InputDecoration(labelText: 'Email'),
+                    validator: (value) =>
+                        value!.isEmpty ? 'Enter email' : null,
+                  ),
+                  TextFormField(
+                    controller: phoneController,
+                    decoration: InputDecoration(labelText: 'Phone Number'),
+                    validator: (value) =>
+                        value!.isEmpty ? 'Enter phone number' : null,
+                  ),
+                ],
+              ),
+            ),
+          ),
+          actions: [
+            TextButton(
+              child: Text("Cancel"),
+              onPressed: () => Navigator.pop(context),
+            ),
+            ElevatedButton(
+              child: Text("Submit"),
+              onPressed: () {
+                if (_formKey.currentState!.validate()) {
+                  _saveData(
+                    nameController.text,
+                    lastNameController.text,
+                    emailController.text,
+                    phoneController.text,
+                  );
+                  Navigator.pop(context);
+                }
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text("User Details Form")),
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.add),
+        onPressed: _showFormDialog,
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: name == ''
+            ? Center(child: Text('No data stored yet'))
+            : Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text("First Name: $name",
+                      style: TextStyle(fontSize: 18, color: Colors.blue)),
+                  Text("Last Name: $lastName",
+                      style: TextStyle(fontSize: 18, color: Colors.blue)),
+                  Text("Email: $email",
+                      style: TextStyle(fontSize: 18, color: Colors.blue)),
+                  Text("Phone: $phone",
+                      style: TextStyle(fontSize: 18, color: Colors.blue)),
+                ],
+              ),
+      ),
+    );
+  }
+}
