@@ -1,0 +1,97 @@
+Question 3: Render given images if the index is odd then display the first image and if even then display the second image and also display the index number above the image in the left corner. and the max count should be 20. What will be your approach to solving this problem statement?
+Image1: https://i.picsum.photos/id/9/250/250.jpg?hmac=tqDH5wEWHDN76mBIWEPzg1in6egMl49qZeguSaH9_VI
+Image2: https://images.pexels.com/photos/213780/pexels-photo-213780.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500
+Hint 1:- Use listview.builder or gridview
+Hint 2:- Add logic to find the odd and even number
+Hint 3:- Add network.image widget for rendering the internet image in UI
+
+source code:
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(ImageListApp());
+}
+
+class ImageListApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Odd & Even Images',
+      theme: ThemeData(primarySwatch: Colors.blue),
+      home: ImageListScreen(),
+    );
+  }
+}
+
+class ImageListScreen extends StatelessWidget {
+  // 🔹 Max count is 20
+  final int maxCount = 20;
+
+  // 🔹 Image URLs
+  final String image1 =
+      "https://i.picsum.photos/id/9/250/250.jpg?hmac=tqDH5wEWHDN76mBIWEPzg1in6egMl49qZeguSaH9_VI";
+  final String image2 =
+      "https://images.pexels.com/photos/213780/pexels-photo-213780.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500";
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text("Odd & Even Image Renderer")),
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        // 🔹 Hint 1: Use GridView.builder for better layout
+        child: GridView.builder(
+          itemCount: maxCount,
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2, // two images per row
+            crossAxisSpacing: 10,
+            mainAxisSpacing: 10,
+          ),
+          itemBuilder: (context, index) {
+            // 🔹 Hint 2: Check for odd/even index
+            bool isOdd = index % 2 != 0;
+            String imageUrl = isOdd ? image1 : image2;
+
+            return Stack(
+              children: [
+                // 🔹 Hint 3: Display image using NetworkImage
+                Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    image: DecorationImage(
+                      image: NetworkImage(imageUrl),
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
+                // 🔹 Display index in top-left corner
+                Positioned(
+                  top: 8,
+                  left: 8,
+                  child: Container(
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                    decoration: BoxDecoration(
+                      color: Colors.black.withOpacity(0.6),
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: Text(
+                      'Index: $index',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            );
+          },
+        ),
+      ),
+    );
+  }
+}
+
+
