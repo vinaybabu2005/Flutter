@@ -1,0 +1,137 @@
+Question 7: Create a Form with two TextFormFields that require user input and a button to submit the form. Use the Provider package to pass the form data to another widget.
+
+source code:
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+void main() {
+  runApp(
+    // 🔹 Wrap app with ChangeNotifierProvider
+    ChangeNotifierProvider(
+      create: (_) => FormDataProvider(),
+      child: MyFormApp(),
+    ),
+  );
+}
+
+// 🔹 Provider class to store form data
+class FormDataProvider extends ChangeNotifier {
+  String firstName = '';
+  String lastName = '';
+
+  void saveData(String fName, String lName) {
+    firstName = fName;
+    lastName = lName;
+    notifyListeners();
+  }
+}
+
+class MyFormApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Form with Provider',
+      theme: ThemeData(primarySwatch: Colors.blue),
+      home: FormScreen(),
+    );
+  }
+}
+
+class FormScreen extends StatefulWidget {
+  @override
+  _FormScreenState createState() => _FormScreenState();
+}
+
+class _FormScreenState extends State<FormScreen> {
+  final _formKey = GlobalKey<FormState>();
+  final TextEditingController _firstNameController = TextEditingController();
+  final TextEditingController _lastNameController = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text("Form Example")),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            Form(
+              key: _formKey,
+              child: Column(
+                children: [
+                  // 🔹 First TextFormField
+                  TextFormField(
+                    controller: _firstNameController,
+                    decoration: InputDecoration(
+                      labelText: "First Name",
+                      border: OutlineInputBorder(),
+                    ),
+                    validator: (value) =>
+                        value!.isEmpty ? "Enter first name" : null,
+                  ),
+                  SizedBox(height: 16),
+                  // 🔹 Second TextFormField
+                  TextFormField(
+                    controller: _lastNameController,
+                    decoration: InputDecoration(
+                      labelText: "Last Name",
+                      border: OutlineInputBorder(),
+                    ),
+                    validator: (value) =>
+                        value!.isEmpty ? "Enter last name" : null,
+                  ),
+                  SizedBox(height: 16),
+                  // 🔹 Submit Button
+                  ElevatedButton(
+                    onPressed: () {
+                      if (_formKey.currentState!.validate()) {
+                        // Save data using Provider
+                        Provider.of<FormDataProvider>(context, listen: false)
+                            .saveData(_firstNameController.text,
+                                _lastNameController.text);
+
+                        // Navigate to next screen
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => DisplayScreen(),
+                          ),
+                        );
+                      }
+                    },
+                    child: Text("Submit"),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// 🔹 Screen to display the form data
+class DisplayScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    // Access the Provider data
+    final formData = Provider.of<FormDataProvider>(context);
+
+    return Scaffold(
+      appBar: AppBar(title: Text("Display Form Data")),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text("First Name: ${formData.firstName}",
+                style: TextStyle(fontSize: 20)),
+            SizedBox(height: 10),
+            Text("Last Name: ${formData.lastName}",
+                style: TextStyle(fontSize: 20)),
+          ],
+        ),
+      ),
+    );
+  }
+}
