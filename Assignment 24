@@ -1,0 +1,90 @@
+Question 10: Create a Flutter application using Riverpod state management where pressing a button changes the background color of the appBar and Scaffold, as well as plays one of 10 music notes. 
+
+source code:
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:audioplayers/audioplayers.dart';
+
+// Provider for colors
+final colorProvider = StateProvider<Color>((ref) => Colors.white);
+final appBarColorProvider = StateProvider<Color>((ref) => Colors.blue);
+
+// Provider for playing audio notes
+final audioPlayerProvider = Provider<AudioPlayer>((ref) => AudioPlayer());
+
+// Provider to hold the current note index (0-9)
+final noteIndexProvider = StateProvider<int>((ref) => 0);
+
+void main() {
+  runApp(ProviderScope(child: MyApp()));
+}
+
+class MyApp extends ConsumerWidget {
+  static final List<Color> scaffoldColors = [
+    Colors.white,
+    Colors.yellow.shade100,
+    Colors.green.shade100,
+    Colors.orange.shade100,
+    Colors.pink.shade100,
+    Colors.cyan.shade100,
+    Colors.lime.shade100,
+    Colors.amber.shade100,
+    Colors.teal.shade100,
+    Colors.purple.shade100,
+  ];
+
+  static final List<Color> appBarColors = [
+    Colors.blue,
+    Colors.red,
+    Colors.purple,
+    Colors.orange,
+    Colors.pink,
+    Colors.cyan,
+    Colors.lime,
+    Colors.amber,
+    Colors.teal,
+    Colors.indigo,
+  ];
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final scaffoldColor = ref.watch(colorProvider);
+    final appBarColor = ref.watch(appBarColorProvider);
+
+    return MaterialApp(
+      home: Scaffold(
+        backgroundColor: scaffoldColor,
+        appBar: AppBar(
+          title: Text('Riverpod Music Notes'),
+          backgroundColor: appBarColor,
+        ),
+        body: Center(
+          child: Text(
+            'Press the button to change colors and play notes',
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 20),
+          ),
+        ),
+        floatingActionButton: FloatingActionButton(
+          child: Icon(Icons.music_note),
+          onPressed: () async {
+            final noteIndex = ref.read(noteIndexProvider);
+            final audioPlayer = ref.read(audioPlayerProvider);
+
+            // Cycle colors and notes
+            final nextIndex = (noteIndex + 1) % 10;
+
+            // Update colors
+            ref.read(colorProvider.notifier).state = scaffoldColors[nextIndex];
+            ref.read(appBarColorProvider.notifier).state = appBarColors[nextIndex];
+            ref.read(noteIndexProvider.notifier).state = nextIndex;
+
+            // Play note audio
+            // Assuming you have 10 note files named note0.wav ... note9.wav
+            await audioPlayer.play(AssetSource('notes/note$nextIndex.wav'));
+          },
+        ),
+      ),
+    );
+  }
+}
