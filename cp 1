@@ -1,0 +1,110 @@
+Question 01: You have to develop a cake-ordering application that allows users to place orders for cakes and view them on the admin panel. The application will have the following features:
+
+User-friendly interface for placing cake orders, including options for customizing the cake such as size.
+Securing authentication for the users to place orders and for the admin to view them.
+Creating the Admin panel to view all orders placed by users and update the status of orders.
+Making use of Firebase to store order data.
+Note: This final project will provide you with the opportunity to apply the concepts and techniques covered throughout the course to create a functional, production-ready application. This project will include the use of advanced features like Firebase integration, push notifications, and user authentication.
+
+The potential UI design of the admin app and the User app is given as follows:
+
+ 
+
+1) Admin Panel UI Screenshot:
+
+
+
+ 
+
+2) Admin UI dialog box:
+
+image-1.png
+
+ 
+
+3) User Login UI:
+
+image-2.png
+
+ 
+
+4) User Menu UI:
+
+image-3.png
+
+ 
+
+5) User Drawer UI:
+
+image-4.png
+
+ 
+
+6) Order status UI:
+
+image-5.png
+
+source code:
+import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'menu_page.dart';
+import '../admin/admin_panel.dart';
+
+class LoginPage extends StatefulWidget {
+  const LoginPage({super.key});
+
+  @override
+  State<LoginPage> createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  Future<void> _login() async {
+    try {
+      final userCredential = await _auth.signInWithEmailAndPassword(
+        email: _emailController.text.trim(),
+        password: _passwordController.text.trim(),
+      );
+
+      // Check if the email belongs to admin
+      if (_emailController.text.trim() == 'admin@example.com') {
+        Navigator.pushReplacement(
+            context, MaterialPageRoute(builder: (_) => const AdminPanel()));
+      } else {
+        Navigator.pushReplacement(
+            context, MaterialPageRoute(builder: (_) => const MenuPage()));
+      }
+    } on FirebaseAuthException catch (e) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(e.message ?? 'Login Error')));
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Login')),
+      body: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            TextFormField(
+              controller: _emailController,
+              decoration: const InputDecoration(labelText: 'Email'),
+            ),
+            TextFormField(
+              controller: _passwordController,
+              decoration: const InputDecoration(labelText: 'Password'),
+              obscureText: true,
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton(onPressed: _login, child: const Text('Login')),
+          ],
+        ),
+      ),
+    );
+  }
+}
