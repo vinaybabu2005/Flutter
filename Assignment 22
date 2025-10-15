@@ -1,0 +1,89 @@
+Question 8: Create a Flutter app with two screens, each displaying a numerical value in its user interface. Upon pressing a floating action button on the home page, the value of the number will increase for both screens. Add navigation to switch between the two screens to observe the results
+
+sorce code:
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(NumberApp());
+}
+
+class NumberApp extends StatefulWidget {
+  @override
+  _NumberAppState createState() => _NumberAppState();
+}
+
+class _NumberAppState extends State<NumberApp> {
+  int _number = 0;
+
+  void _incrementNumber() {
+    setState(() {
+      _number++;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Two Screen Number App',
+      initialRoute: '/',
+      routes: {
+        '/': (context) => HomeScreen(number: _number, increment: _incrementNumber),
+        '/second': (context) => SecondScreen(number: _number),
+      },
+    );
+  }
+}
+
+class HomeScreen extends StatelessWidget {
+  final int number;
+  final VoidCallback increment;
+
+  const HomeScreen({required this.number, required this.increment});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Home Screen'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.navigate_next),
+            onPressed: () => Navigator.pushNamed(context, '/second'),
+          ),
+        ],
+      ),
+      body: Center(
+        child: Text(
+          '$number',
+          style: TextStyle(fontSize: 48),
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: increment,
+        child: Icon(Icons.add),
+      ),
+    );
+  }
+}
+
+class SecondScreen extends StatelessWidget {
+  final int number;
+
+  const SecondScreen({required this.number});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Second Screen'),
+        leading: BackButton(),
+      ),
+      body: Center(
+        child: Text(
+          '$number',
+          style: TextStyle(fontSize: 48),
+        ),
+      ),
+    );
+  }
+}
