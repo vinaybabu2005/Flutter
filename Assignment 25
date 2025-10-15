@@ -1,0 +1,64 @@
+Question 1: Find the odd and even number in the given list and Showcase it in the UI based on numbers divided by 2 then show it in green color otherwise show it in red color. How will you resolve this problem statement?
+var numberList = [10,12,13,56,27,29,30];
+Hint 1:- Declare the list inside the dart file
+Hint 2:- Use numberList[index]%2==0 is divided by 2 otherwise not divided by 2
+Hint 3:- Add listView.builder to show the data in the UI
+
+source code:
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(NumberApp());
+}
+
+class NumberApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Odd & Even Numbers',
+      theme: ThemeData(primarySwatch: Colors.blue),
+      home: NumberScreen(),
+    );
+  }
+}
+
+class NumberScreen extends StatelessWidget {
+  // 🔹 Hint 1: Declare the list inside the dart file
+  final List<int> numberList = [10, 12, 13, 56, 27, 29, 30];
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text('Odd & Even Numbers')),
+      body: ListView.builder(
+        itemCount: numberList.length,
+        itemBuilder: (context, index) {
+          int number = numberList[index];
+
+          // 🔹 Hint 2: Check if divisible by 2
+          bool isEven = number % 2 == 0;
+
+          return Card(
+            margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: ListTile(
+              title: Text(
+                '$number',
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  // 🔹 Green if even, Red if odd
+                  color: isEven ? Colors.green : Colors.red,
+                ),
+              ),
+              subtitle: Text(isEven ? 'Even Number' : 'Odd Number'),
+              leading: Icon(
+                isEven ? Icons.check_circle : Icons.cancel,
+                color: isEven ? Colors.green : Colors.red,
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
