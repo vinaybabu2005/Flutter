@@ -1,0 +1,79 @@
+Question 4: Show a gif in UI that is based on a timer. If the timer is equal and less than 15 seconds then show the gif else display a message like running time has been over. How will you solve this problem statement? 
+personing running.gif
+Hint 1:- Use futur.delayed for the duration
+Hint 2:- Use a flag based on time and add logic to rendering the gif and text.
+
+source code:
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(TimerGifApp());
+}
+
+class TimerGifApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Timer Based GIF Display',
+      theme: ThemeData(primarySwatch: Colors.blue),
+      home: TimerGifScreen(),
+    );
+  }
+}
+
+class TimerGifScreen extends StatefulWidget {
+  @override
+  _TimerGifScreenState createState() => _TimerGifScreenState();
+}
+
+class _TimerGifScreenState extends State<TimerGifScreen> {
+  bool showGif = true; // 🔹 Flag based on time
+
+  @override
+  void initState() {
+    super.initState();
+
+    // 🔹 Hint 1: Use Future.delayed to handle timer
+    Future.delayed(Duration(seconds: 15), () {
+      setState(() {
+        showGif = false; // 🔹 After 15 seconds, hide the gif
+      });
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text("Timer-Based GIF Display")),
+      body: Center(
+        child: showGif
+            // 🔹 Show GIF while timer is ≤ 15 sec
+            ? Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    "Running... (GIF visible for 15 seconds)",
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(height: 20),
+                  Image.network(
+                    "https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif", // replace with your "person running.gif"
+                    height: 200,
+                    width: 200,
+                    fit: BoxFit.cover,
+                  ),
+                ],
+              )
+            // 🔹 After 15 sec → show message
+            : Text(
+                "Running time has been over ⏰",
+                style: TextStyle(
+                    fontSize: 20,
+                    color: Colors.red,
+                    fontWeight: FontWeight.bold),
+              ),
+      ),
+    );
+  }
+}
+
