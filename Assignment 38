@@ -1,0 +1,68 @@
+Question 4: Your client has asked you to display each user's email and name from their Firestore collection named "users" in your application. Utilize the ListTile widget for presentation.
+
+source code:
+import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+void main() {
+  runApp(FirestoreListApp());
+}
+
+class FirestoreListApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Firestore Users List',
+      theme: ThemeData(primarySwatch: Colors.blue),
+      home: UsersListScreen(),
+    );
+  }
+}
+
+class UsersListScreen extends StatelessWidget {
+  final CollectionReference usersCollection =
+      FirebaseFirestore.instance.collection('users');
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text("Users List")),
+      body: StreamBuilder<QuerySnapshot>(
+        stream: usersCollection.snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            return Center(child: Text("Error: ${snapshot.error}"));
+          }
+
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          }
+
+          final userDocs = snapshot.data!.docs;
+
+          if (userDocs.isEmpty) {
+            return Center(child: Text("No users found"));
+          }
+
+          return ListView.builder(
+            itemCount: userDocs.length,
+            itemBuilder: (context, index) {
+              final userData = userDocs[index].data() as Map<String, dynamic>;
+              final userName = userData['name'] ?? 'No Name';
+              final userEmail = userData['email'] ?? 'No Email';
+
+              return ListTile(
+                leading: CircleAvatar(
+                  child: Text(userName[0].toUpperCase()),
+                ),
+                title: Text(userName),
+                subtitle: Text(userEmail),
+                trailing: Icon(Icons.person),
+              );
+            },
+          );
+        },
+      ),
+    );
+  }
+}
