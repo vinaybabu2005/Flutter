@@ -1,0 +1,70 @@
+Question 6: Create a simple TextFormField that displays a label and saves the user input to a variable.
+
+source code:
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(TextInputApp());
+}
+
+class TextInputApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'TextFormField Example',
+      theme: ThemeData(primarySwatch: Colors.blue),
+      home: TextFormFieldExample(),
+    );
+  }
+}
+
+class TextFormFieldExample extends StatefulWidget {
+  @override
+  _TextFormFieldExampleState createState() => _TextFormFieldExampleState();
+}
+
+class _TextFormFieldExampleState extends State<TextFormFieldExample> {
+  // 🔹 Controller to capture user input
+  final TextEditingController _controller = TextEditingController();
+
+  // 🔹 Variable to store user input
+  String userInput = '';
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text("TextFormField Example")),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            // 🔹 TextFormField with label
+            TextFormField(
+              controller: _controller,
+              decoration: InputDecoration(
+                labelText: "Enter your name",
+                border: OutlineInputBorder(),
+              ),
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                setState(() {
+                  // Save user input from TextFormField
+                  userInput = _controller.text;
+                });
+              },
+              child: Text("Save"),
+            ),
+            SizedBox(height: 20),
+            // 🔹 Display saved input
+            Text(
+              "You entered: $userInput",
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
