@@ -1,0 +1,61 @@
+Question 35: We have reordered a given list of data by drag and drop. How will you achieve this problem statement?
+var List=[item1,item2,item3,item4,item5]
+Hint 1:- Use ListTitle and ReorderedListByDragDrop widget.
+Hint 2:- Add logic for the reordered list by drag and drop. 
+
+source code:
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Reorderable List Demo',
+      home: ReorderableListPage(),
+    );
+  }
+}
+
+class ReorderableListPage extends StatefulWidget {
+  @override
+  State<ReorderableListPage> createState() => _ReorderableListPageState();
+}
+
+class _ReorderableListPageState extends State<ReorderableListPage> {
+  // Initial list
+  List<String> items = ['item1', 'item2', 'item3', 'item4', 'item5'];
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Reorderable List')),
+      body: ReorderableListView(
+        padding: const EdgeInsets.symmetric(vertical: 20),
+        children: [
+          for (int index = 0; index < items.length; index++)
+            ListTile(
+              key: ValueKey(items[index]),
+              title: Text(items[index]),
+              leading: const Icon(Icons.drag_handle),
+            ),
+        ],
+        onReorder: (int oldIndex, int newIndex) {
+          setState(() {
+            // Adjust newIndex if moving down the list
+            if (newIndex > oldIndex) {
+              newIndex -= 1;
+            }
+            final item = items.removeAt(oldIndex);
+            items.insert(newIndex, item);
+          });
+        },
+      ),
+    );
+  }
+}
