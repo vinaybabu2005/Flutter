@@ -1,0 +1,86 @@
+Question 8: Create a simple Provider that provides a counter value and a button to increment the counter. Display the counter value in another widget.
+
+source code:
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+void main() {
+  runApp(
+    // 🔹 Wrap app with ChangeNotifierProvider
+    ChangeNotifierProvider(
+      create: (_) => CounterProvider(),
+      child: CounterApp(),
+    ),
+  );
+}
+
+// 🔹 Provider class to manage counter state
+class CounterProvider extends ChangeNotifier {
+  int _counter = 0;
+
+  int get counter => _counter;
+
+  void increment() {
+    _counter++;
+    notifyListeners(); // Notify all listeners about the change
+  }
+}
+
+class CounterApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Provider Counter Example',
+      theme: ThemeData(primarySwatch: Colors.blue),
+      home: CounterHomeScreen(),
+    );
+  }
+}
+
+class CounterHomeScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    // Access the Provider
+    final counterProvider = Provider.of<CounterProvider>(context);
+
+    return Scaffold(
+      appBar: AppBar(title: Text("Counter with Provider")),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              "Counter Value:",
+              style: TextStyle(fontSize: 24),
+            ),
+            SizedBox(height: 10),
+            // 🔹 Display counter value
+            CounterDisplay(),
+          ],
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          // 🔹 Increment counter
+          counterProvider.increment();
+        },
+        child: Icon(Icons.add),
+      ),
+    );
+  }
+}
+
+// 🔹 Another widget to display counter value
+class CounterDisplay extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<CounterProvider>(
+      builder: (context, counterProvider, child) {
+        return Text(
+          "${counterProvider.counter}",
+          style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
+        );
+      },
+    );
+  }
+}
